@@ -10,6 +10,9 @@ A professional ROS 2 Humble implementation for autonomous pick-and-place operati
   <img src="src/images/Screenshot from 2026-04-13 17-58-20.png" width="400" alt="Grasping Operation">
 </div>
 
+## Video Demonstration
+🎥 **Watch the full autonomous pipeline in action:** [YouTube Video Link](https://youtu.be/A3lDvh33nuA)
+
 ## Key Features
 - **ROS 2 Humble Integration**: Modern ROS 2 architecture for distributed robotic control.
 - **Gazebo Fortress (Ignition) Simulation**: High-fidelity simulation using the latest Gazebo tools.
