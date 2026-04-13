@@ -2,6 +2,14 @@
 
 A professional ROS 2 Humble implementation for autonomous pick-and-place operations using the Franka Panda robot in Gazebo Fortress. This project features integrated visual servoing, hardened control loops, and MoveIt 2 integration for robust manipulation tasks.
 
+## Project Visualization
+<div align="center">
+  <img src="src/images/Screenshot from 2026-04-13 17-58-02.png" width="800" alt="Simulation Overview">
+  <br>
+  <img src="src/images/Screenshot from 2026-04-13 17-58-11.png" width="400" alt="Object Detection">
+  <img src="src/images/Screenshot from 2026-04-13 17-58-20.png" width="400" alt="Grasping Operation">
+</div>
+
 ## Key Features
 - **ROS 2 Humble Integration**: Modern ROS 2 architecture for distributed robotic control.
 - **Gazebo Fortress (Ignition) Simulation**: High-fidelity simulation using the latest Gazebo tools.
