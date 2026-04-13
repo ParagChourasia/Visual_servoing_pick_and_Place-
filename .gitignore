@@ -1,0 +1,30 @@
+# ROS 2 colcon workspace
+build/
+install/
+log/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env/
+
+# Gazebo / SDF / Simulation artifacts
+*.sdf.bak
+*.xml.bak
+
+# Git merge/backup
+*.orig
+*.swp
+*.bak
+
+# Others
+.DS_Store

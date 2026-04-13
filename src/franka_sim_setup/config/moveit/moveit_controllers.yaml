@@ -1,0 +1,26 @@
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - franka_arm_controller
+    - franka_gripper_controller
+
+  franka_arm_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: True
+    joints:
+      - fer_joint1
+      - fer_joint2
+      - fer_joint3
+      - fer_joint4
+      - fer_joint5
+      - fer_joint6
+      - fer_joint7
+
+  franka_gripper_controller:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: True
+    joints:
+      - fer_finger_joint1
