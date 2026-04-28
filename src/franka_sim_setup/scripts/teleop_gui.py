@@ -16,7 +16,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from sensor_msgs.msg import JointState
 from action_msgs.msg import GoalStatus
 from shape_msgs.msg import SolidPrimitive
-from std_msgs.msg import String
+from std_msgs.msg import String, Empty
 
 class FrankaTeleopGUI(Node):
     def __init__(self):
@@ -26,6 +26,7 @@ class FrankaTeleopGUI(Node):
         self.move_group_client = ActionClient(self, MoveGroup, '/move_action')
         self.gripper_client = ActionClient(self, FollowJointTrajectory, '/franka_gripper_controller/follow_joint_trajectory')
         self.attach_pub = self.create_publisher(String, '/detachable_joint/attach', 10)
+        self.detach_pub = self.create_publisher(Empty, '/detachable_joint/detach', 10)
         
         # 2. State & Config
         self.current_joint_states = None
@@ -212,7 +213,7 @@ class TeleopDashboard:
         etc_frame = ttk.LabelFrame(self.root, text=" System Overrides ", padding=10)
         etc_frame.pack(padx=20, pady=10, fill="x")
 
-        btn_detach = tk.Button(etc_frame, text="EMERGENCY DETACH", command=lambda: self.node.attach_pub.publish(String(data="detach")), bg="#fab387", fg="#11111b")
+        btn_detach = tk.Button(etc_frame, text="EMERGENCY DETACH", command=lambda: self.node.detach_pub.publish(Empty()), bg="#fab387", fg="#11111b")
         btn_detach.pack(fill="x")
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)

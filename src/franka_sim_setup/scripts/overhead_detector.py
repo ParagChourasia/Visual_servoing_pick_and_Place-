@@ -103,7 +103,7 @@ class OverheadDetector(Node):
             
             # Correction:
             world_x = self.cam_x - y_c
-            world_y = self.cam_y + x_c
+            world_y = self.cam_y - x_c
             world_z = self.cam_z - z_c
             
             return (world_x, world_y, world_z)

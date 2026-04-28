@@ -1,0 +1,8 @@
+string color
+string destination
+---
+bool success
+string error_message
+---
+string status
+float32 progress

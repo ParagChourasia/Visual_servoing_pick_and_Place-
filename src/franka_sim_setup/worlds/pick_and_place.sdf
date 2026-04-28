@@ -67,8 +67,9 @@
     <!-- Table -->
     <model name="table">
       <static>true</static>
-      <pose>0.8 0 0.01 0 0 0</pose>
-      <link name="link">
+      <!-- Table top surface center at z=0.39 → top at 0.40 m above ground -->
+      <pose>0.8 0 0.39 0 0 0</pose>
+      <link name="table_top">
         <collision name="collision">
           <geometry>
             <box>
@@ -83,16 +84,61 @@
             </box>
           </geometry>
           <material>
-            <ambient>0.5 0.3 0.1 1</ambient>
-            <diffuse>0.5 0.3 0.1 1</diffuse>
+            <ambient>0.55 0.35 0.15 1</ambient>
+            <diffuse>0.55 0.35 0.15 1</diffuse>
           </material>
+        </visual>
+      </link>
+      <!-- Front-left leg -->
+      <link name="leg_fl">
+        <pose>0.45 0.68 -0.195 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- Front-right leg -->
+      <link name="leg_fr">
+        <pose>0.45 -0.68 -0.195 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- Back-left leg -->
+      <link name="leg_bl">
+        <pose>-0.45 0.68 -0.195 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
+        </visual>
+      </link>
+      <!-- Back-right leg -->
+      <link name="leg_br">
+        <pose>-0.45 -0.68 -0.195 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.06 0.06 0.39</size></box></geometry>
+          <material><ambient>0.4 0.25 0.1 1</ambient><diffuse>0.4 0.25 0.1 1</diffuse></material>
         </visual>
       </link>
     </model>
 
     <!-- Cubes -->
     <model name="red_cube">
-      <pose>0.6 0.2 0.04 0 0 0</pose>
+      <!-- Resting on table top: 0.40 + 0.02 (half cube height) = 0.42 -->
+      <pose>0.6 0.2 0.42 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -120,7 +166,7 @@
     </model>
 
     <model name="green_cube">
-      <pose>0.6 0.0 0.04 0 0 0</pose>
+      <pose>0.6 0.0 0.42 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -148,7 +194,7 @@
     </model>
 
     <model name="blue_cube">
-      <pose>0.6 -0.2 0.04 0 0 0</pose>
+      <pose>0.6 -0.2 0.42 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -175,10 +221,11 @@
       </link>
     </model>
 
-    <!-- Bins -->
+    <!-- Bins: raised to sit on table top at 0.40 m -->
     <model name="red_bin">
       <static>true</static>
-      <pose>0.9 0.4 0.03 0 0 0</pose>
+      <!-- bin center z = 0.40 + 0.01 (half of 0.02 thickness) = 0.41 -->
+      <pose>0.75 0.4 0.41 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -199,7 +246,7 @@
 
     <model name="green_bin">
       <static>true</static>
-      <pose>0.9 0.0 0.03 0 0 0</pose>
+      <pose>0.75 0.0 0.41 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -220,7 +267,7 @@
 
     <model name="blue_bin">
       <static>true</static>
-      <pose>0.9 -0.4 0.03 0 0 0</pose>
+      <pose>0.75 -0.4 0.41 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -239,10 +286,30 @@
       </link>
     </model>
 
+    <!-- Robot Base Pedestal: solid box from z=0 to z=0.40 m, centered at robot spawn (0,0) -->
+    <model name="robot_base_pedestal">
+      <static>true</static>
+      <!-- center at z=0.20 so top face is at 0.40 m -->
+      <pose>0 0 0.2 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry>
+            <box><size>0.3 0.3 0.4</size></box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.25 0.27 1</ambient>
+            <diffuse>0.25 0.25 0.27 1</diffuse>
+            <specular>0.4 0.4 0.4 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
     <!-- Overhead Camera -->
     <model name="overhead_camera">
       <static>true</static>
-      <pose>0.8 0 1.2 0 1.5708 0</pose>
+      <!-- Raised by 0.40 m to maintain same relative height above table -->
+      <pose>0.8 0 1.6 0 1.5708 0</pose>
       <link name="link">
         <sensor name="overhead_camera" type="rgbd">
           <camera>
@@ -264,6 +331,92 @@
         </sensor>
         <visual name="visual">
           <geometry><box><size>0.05 0.05 0.05</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Walls for LiDAR and Map Generation -->
+    <model name="wall_north">
+      <static>true</static>
+      <pose>5 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.2 10 2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 10 2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+    
+    <model name="wall_south">
+      <static>true</static>
+      <pose>-5 0 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.2 10 2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 10 2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_east">
+      <static>true</static>
+      <pose>0 5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>10 0.2 2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>10 0.2 2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_west">
+      <static>true</static>
+      <pose>0 -5 1 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>10 0.2 2</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>10 0.2 2</size></box></geometry>
+          <material><ambient>0.6 0.6 0.6 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Static Obstacles for feature tracking (Visual SLAM) -->
+    <model name="warehouse_box_1">
+      <static>true</static>
+      <pose>-2 2 0.5 0 0 0.5</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>1 1 1</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.2 0.1 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="warehouse_box_2">
+      <static>true</static>
+      <pose>-3 -1.5 0.75 0 0 -0.2</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.8 1.5 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.8 1.5 1.5</size></box></geometry>
+          <material><ambient>0.2 0.4 0.5 1</ambient></material>
         </visual>
       </link>
     </model>

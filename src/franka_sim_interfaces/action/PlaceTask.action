@@ -1,0 +1,9 @@
+# Goal
+string color  # Target color to define the bin (red, green, blue)
+---
+# Result
+bool success
+string error_message
+---
+# Feedback
+string status

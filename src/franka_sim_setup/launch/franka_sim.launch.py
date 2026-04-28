@@ -2,9 +2,9 @@ import os
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, SetEnvironmentVariable, AppendEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, FindExecutable, PathJoinSubstitution, EnvironmentVariable
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.parameter_descriptions import ParameterValue
@@ -20,19 +20,26 @@ def generate_launch_description():
     # Paths
     pkg_franka_sim_setup = get_package_share_directory('franka_sim_setup')
     pkg_franka_description = get_package_share_directory('franka_description')
-    
-    # Set Gazebo Resource Path
-    # This allows Gazebo to find meshes in the install directory
-    # Gazebo looks for model://franka_description, so we need the directory containing the 'franka_description' folder
-    description_share_dir = os.path.dirname(pkg_franka_description)
-    
-    gz_resource_path = SetEnvironmentVariable(
-        name='GZ_SIM_RESOURCE_PATH',
-        value=[pkg_franka_sim_setup, ':', description_share_dir]
-    )
+    pkg_rosbot_xl_description = get_package_share_directory('rosbot_xl_description')
+    pkg_husarion_components = get_package_share_directory('husarion_components_description')
+    pkg_realsense = get_package_share_directory('realsense2_description')
     
     # World file
     world_file = os.path.join(pkg_franka_sim_setup, 'worlds', 'pick_and_place.sdf')
+    
+    # Set Gazebo Resource Path
+    resource_path_values = os.path.join(pkg_franka_description, '..') + ':' + \
+                           os.path.join(pkg_realsense, '..') + ':' + \
+                           '/opt/ros/humble/share'
+
+    gz_resource_path = AppendEnvironmentVariable(
+        name='GZ_SIM_RESOURCE_PATH',
+        value=resource_path_values
+    )
+    ign_resource_path = AppendEnvironmentVariable(
+        name='IGN_GAZEBO_RESOURCE_PATH',
+        value=resource_path_values
+    )
     
     # 1. URDF/Xacro
     xacro_file = os.path.join(pkg_franka_sim_setup, 'robots', 'fer_with_camera.urdf.xacro')
@@ -109,6 +116,21 @@ def generate_launch_description():
         parameters=[robot_description, {'use_sim_time': True}],
     )
 
+    # Static Transforms for Multi-Robot Visualization
+    world_to_franka = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['0', '0', '0.4', '0', '0', '0', 'world', 'fer_link0'],
+        parameters=[{'use_sim_time': True}]
+    )
+
+    world_to_rosbot_odom = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        arguments=['-4.0', '-4.0', '0', '0', '0', '0', 'world', 'rosbot/odom'],
+        parameters=[{'use_sim_time': True}]
+    )
+
     # Gazebo
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -117,16 +139,31 @@ def generate_launch_description():
         launch_arguments={'gz_args': f'-r {world_file}'}.items(),
     )
 
-    # Spawn robot
-    spawn_robot = Node(
+    # Spawn Franka robot
+    spawn_franka = Node(
         package='ros_gz_sim',
         executable='create',
         arguments=[
             '-name', 'fer',
             '-topic', 'robot_description',
-            '-x', '0', '-y', '0', '-z', '0'
+            '-world', 'pick_and_place',
+            '-x', '0', '-y', '0', '-z', '0.40'
         ],
         output='screen',
+    )
+
+    # ROSbot XL Integration (Separate Modular File)
+    rosbot_sim = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(pkg_franka_sim_setup, 'launch', 'rosbot_sim.launch.py')
+        ),
+        launch_arguments={
+            'x': '-4.0',
+            'y': '-4.0',
+            'z': '0.1',
+            'namespace': 'rosbot',
+            'use_sim': 'True',
+        }.items(),
     )
 
     # Controller Manager configuration file
@@ -137,6 +174,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        parameters=[{'use_sim_time': True}],
     )
 
     franka_arm_controller_spawner = Node(
@@ -144,6 +182,7 @@ def generate_launch_description():
         executable="spawner",
         arguments=["franka_arm_controller", "--controller-manager", "/controller_manager",
                    "--param-file", controller_config_file],
+        parameters=[{'use_sim_time': True}],
     )
 
     franka_gripper_controller_spawner = Node(
@@ -151,19 +190,23 @@ def generate_launch_description():
         executable="spawner",
         arguments=["franka_gripper_controller", "--controller-manager", "/controller_manager",
                    "--param-file", controller_config_file],
+        parameters=[{'use_sim_time': True}],
     )
 
-    # GZ Bridge
+    # GZ Bridge (Franka + ROSbot XL)
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
+            # Simulation Clock
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            # Franka Sensors
             '/wrist_camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
             '/wrist_camera/depth_image@sensor_msgs/msg/Image@gz.msgs.Image',
             '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
             '/wrist_camera/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
             '/detachable_joint/attach@std_msgs/msg/String@gz.msgs.StringMsg',
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/detachable_joint/detach@std_msgs/msg/Empty@gz.msgs.Empty',
             '/gripper_left_contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
             '/gripper_right_contact@ros_gz_interfaces/msg/Contacts[gz.msgs.Contacts',
             '/overhead_camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
@@ -171,6 +214,7 @@ def generate_launch_description():
             '/overhead_camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
             '/overhead_camera/points@sensor_msgs/msg/PointCloud2@gz.msgs.PointCloudPacked',
         ],
+        parameters=[{'use_sim_time': True}],
         output='screen'
     )
 
@@ -238,9 +282,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         gz_resource_path,
+        ign_resource_path,
         gz_sim,
         robot_state_publisher,
-        spawn_robot,
+        world_to_franka,
+        world_to_rosbot_odom,
+        spawn_franka,
+        rosbot_sim,
         bridge,
         joint_state_broadcaster_spawner,
         franka_arm_controller_spawner,

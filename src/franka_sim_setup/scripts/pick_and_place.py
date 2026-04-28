@@ -247,9 +247,10 @@ class PickAndPlaceStateMachine(Node, StateMachine):
                 world_pos = refined_pos
                 time.sleep(1.0)
 
-        # 3. Precision Pick Dive (Z=0.04)
+        # 3. Precision Pick Dive (table @z=0.40m world, cube center @z=0.42m world,
+        #    fer_link0 is at z=0.40m so cube is at z=0.02 in robot frame)
         self.get_logger().info("Diving for grasp...")
-        self.move_to_pose(world_pos[0], world_pos[1], 0.04, q_pick)
+        self.move_to_pose(world_pos[0], world_pos[1], 0.02, q_pick)
         
         # 4. Grasp (High Tension Command)
         self.get_logger().info("Closing fingers...")
@@ -314,7 +315,9 @@ class PickAndPlaceStateMachine(Node, StateMachine):
             t = np.array([trans.transform.translation.x, trans.transform.translation.y, trans.transform.translation.z])
             ray_w = rot @ np.array([x_c, y_c, 1.0])
             ray_w /= np.linalg.norm(ray_w)
-            table_z = 0.04
+            # table top at world z=0.40m; robot base (fer_link0) at world z=0.40m
+            # -> cube surface in fer_link0 frame = 0.42 - 0.40 = 0.02 m
+            table_z = 0.02
             dist = (table_z - t[2]) / ray_w[2]
             return t + dist * ray_w if dist > 0 else None
         except Exception: return None

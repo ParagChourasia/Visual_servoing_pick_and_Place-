@@ -1,0 +1,15 @@
+[submodule "src/libfranka"]
+	path = src/libfranka
+	url = https://github.com/frankarobotics/libfranka.git
+[submodule "src/franka_description"]
+	path = src/franka_description
+	url = https://github.com/frankarobotics/franka_description.git
+[submodule "src/franka_ros2"]
+	path = src/franka_ros2
+	url = https://github.com/frankarobotics/franka_ros2.git
+[submodule "src/rosbot_xl_ros"]
+	path = src/rosbot_xl_ros
+	url = https://github.com/husarion/rosbot_xl_ros.git
+[submodule "src/ros_components_description"]
+	path = src/ros_components_description
+	url = https://github.com/husarion/husarion_components_description.git
