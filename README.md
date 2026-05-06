@@ -100,10 +100,8 @@ ros2 action send_goal /pick_and_place_task franka_sim_interfaces/action/PickAndP
 
 ## 🎥 Demonstration
 
-https://github.com/user-attachments/assets/75199672-8874-4860-8f96-df38f8376510
-
 <div align="center">
-  <video src="src/images/Vision%20based%20Pick%20an%20placed.mkv" width="100%" controls></video>
+  <video src="https://github.com/user-attachments/assets/75199672-8874-4860-8f96-df38f8376510" width="100%" controls></video>
 </div>
 
 ![Simulation Overview](src/images/Screenshot%20from%202026-04-13%2017-58-02.png)
