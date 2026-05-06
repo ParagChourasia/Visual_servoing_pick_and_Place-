@@ -106,7 +106,7 @@ ros2 action send_goal /pick_and_place_task franka_sim_interfaces/action/PickAndP
 
 ![Simulation Overview](src/images/Screenshot%20from%202026-04-13%2017-58-02.png)
 
-> **Watch the full video on YouTube:** [Visual Servoing Pick and Place Demo](https://youtu.be/A3lDvh33nuA)
+> **Watch the full video on YouTube:** [Visual Servoing Pick and Place Demo](https://youtu.be/SlZmiYos_ug)
 
 ---
 
