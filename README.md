@@ -100,7 +100,9 @@ ros2 action send_goal /pick_and_place_task franka_sim_interfaces/action/PickAndP
 
 ## 🎥 Demonstration
 
-https://github.com/ParagChourasia/Visual_servoing_pick_and_Place-/raw/main/src/images/demonstration.mkv
+<div align="center">
+  <video src="https://github.com/ParagChourasia/Visual_servoing_pick_and_Place-/raw/main/src/images/demonstration.mkv" width="100%" controls></video>
+</div>
 
 ![Simulation Overview](src/images/Screenshot%20from%202026-04-13%2017-58-02.png)
 
