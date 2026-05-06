@@ -42,6 +42,8 @@ install(PROGRAMS
   scripts/gripper_monitor.py
   scripts/overhead_detector.py
   scripts/teleop_gui.py
+  scripts/overhead_depth_generator.py
+  scripts/wrist_depth_generator.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
